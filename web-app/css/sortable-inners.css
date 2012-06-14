@@ -1,0 +1,35 @@
+.unit-subadd {
+    color: #ededed;
+    display: none;
+    position: absolute;
+}
+.unit-subadd span {
+    cursor: pointer;
+}
+.unit-subadd:hover span {
+    color: #d4d4d4;
+}
+.unit-inners:hover .unit-subadd {
+    display: block;
+}
+
+.sortable-process .sortable {
+    min-height: 35px;
+    background-color: rgba(255, 245, 245, 0.5);
+}
+.sortable-process .unit-subadd {
+    display: none !important;
+}
+.sortable-process .ui-sortable-helper .unit-inners {
+    display: none;
+}
+.sortable-placeholder {
+    height: 4em;
+    background-color: #fff5ab;
+    border: 1px solid orange;
+    border-radius: 4px;
+}
+
+.sort {
+    cursor: move;
+}

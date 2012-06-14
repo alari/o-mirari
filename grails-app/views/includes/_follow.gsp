@@ -1,0 +1,1 @@
+<g:link for="${target}" controller="follow" action="toggle">${exists ? 'Отписаться' : 'Подписаться'} как ${follower}</g:link>
