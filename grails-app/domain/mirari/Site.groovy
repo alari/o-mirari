@@ -59,4 +59,8 @@ class Site {
     String getUrl() {
         "http://"+host
     }
+
+    String toString() {
+        displayName
+    }
 }
