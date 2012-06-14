@@ -8,3 +8,13 @@ target
 /plugins
 /web-app/plugins
 /web-app/WEB-INF/classes
+*.iml
+*.idea
+.idea
+.idea/
+out/
+.classpath
+.project
+.settings
+web-app/storage
+web-app/f/
