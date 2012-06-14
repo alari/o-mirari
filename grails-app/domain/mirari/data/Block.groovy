@@ -1,5 +1,7 @@
 package mirari.data
 
+import mirari.struct.Entry
+
 class Block {
 
     String id

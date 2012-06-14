@@ -1,15 +1,19 @@
-package mirari.data
+package mirari.struct
 
 import mirari.Site
+import mirari.data.Block
 
-class Pile {
+class Entry {
 
     String id
 
-    Site site
-
     String title
-    String name
+
+    List<Block> blocks
+
+    List<Pile> piles
+
+    Site owner
 
     Date dateCreated
     Date lastUpdated
