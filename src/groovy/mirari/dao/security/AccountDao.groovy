@@ -1,8 +1,9 @@
-package mirari.dao
+package mirari.dao.security
 
 import mirari.security.Account
 import mirari.repo.security.AccountRepo
 import org.springframework.stereotype.Component
+import mirari.dao.Dao
 
 /**
  * @author alari

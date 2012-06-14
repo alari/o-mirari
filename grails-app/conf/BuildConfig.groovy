@@ -57,8 +57,8 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        runtime ":jquery:1.7.1"
-        runtime ":resources:1.1.6", {
+        runtime ":jquery:1.7.2"
+        runtime ":resources:1.2-RC1", {
             excludes "hibernate"
         }
 
@@ -66,7 +66,7 @@ grails.project.dependency.resolution = {
 
         runtime ":zipped-resources:1.0"
         //runtime ":cached-resources:1.0"
-        runtime ":yui-minify-resources:0.1.4"
+        runtime ":yui-minify-resources:0.1.5"
 
         test ":spock:0.6"  , {
             excludes "hibernate"
@@ -82,6 +82,7 @@ grails.project.dependency.resolution = {
         compile ":twitter-bootstrap:2.0.2.25"
 
         //compile ":spring-events:1.2"
+        //compile ":bootstrap-file-upload:2.1.1"
 
         build ":tomcat:$grailsVersion"
     }
