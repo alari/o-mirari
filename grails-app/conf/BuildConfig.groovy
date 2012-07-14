@@ -68,7 +68,7 @@ grails.project.dependency.resolution = {
         //runtime ":cached-resources:1.0"
         runtime ":yui-minify-resources:0.1.5"
 
-        test ":spock:0.6"  , {
+        test ":spock:0.6", {
             excludes "hibernate"
         }
 
@@ -80,6 +80,7 @@ grails.project.dependency.resolution = {
         }
 
         compile ":twitter-bootstrap:2.0.2.25"
+        compile ":fields:1.1"
 
         //compile ":spring-events:1.2"
         //compile ":bootstrap-file-upload:2.1.1"
