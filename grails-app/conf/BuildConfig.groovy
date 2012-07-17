@@ -48,12 +48,12 @@ grails.project.dependency.resolution = {
             exclude "slf4j-log4j12"
         }
 
-        compile "org.jsoup:jsoup:1.6.2"
+        compile "org.jsoup:jsoup:1.6.3"
 
         compile "rome:rome:1.0"
 
         // File storage
-        compile "net.java.dev.jets3t:jets3t:0.8.1"
+        compile "net.java.dev.jets3t:jets3t:0.9.0"
     }
 
     plugins {
@@ -81,6 +81,8 @@ grails.project.dependency.resolution = {
 
         compile ":twitter-bootstrap:2.0.2.25"
         compile ":fields:1.1"
+
+        compile ":redis:1.3.2"
 
         //compile ":spring-events:1.2"
         //compile ":bootstrap-file-upload:2.1.1"

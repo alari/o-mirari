@@ -1,8 +1,9 @@
 package mirari.struct
 
 import mirari.Site
+import mirari.piles.SortablePile
 
-class Pile {
+class Pile implements SortablePile {
 
     String id
 

@@ -1,25 +1,28 @@
 package mirari.piles;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
  * @author alari
  * @since 7/15/12 11:36 PM
  */
-public interface PilesManager {
-    public void put(PiledItem item, SortablePile pile, boolean first);
+public interface PilesManager<T extends PiledItem, K extends SortablePile> {
+    public void put(T item, K pile, boolean first);
 
-    public void remove(PiledItem item, SortablePile pile);
+    public void remove(T item, K pile);
 
-    public void delete(PiledItem item);
+    public void delete(T item);
 
-    public void delete(SortablePile pile);
+    public void delete(K pile);
 
-    public void setPosition(PiledItem item, SortablePile pile, int position);
+    public void setPosition(T item, K pile, int position);
 
-    public void dropPosition(PiledItem item, SortablePile pile, boolean withTail);
+    public void dropPosition(T item, K pile, boolean withTail);
 
-    public List<? extends PiledItem> draw(SortablePile pile, int num, int offset);
+    public List<T> draw(K pile, long limit, long offset);
 
-    public List<? extends SortablePile> getRelatedPiles(SortablePile pile, int num, int depth);
+    public List<K> getRelatedPiles(K pile, int num, int depth);
+
+    public Collection<K> getPiles(T item);
 }

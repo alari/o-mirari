@@ -2,8 +2,9 @@ package mirari.struct
 
 import mirari.Site
 import mirari.data.Block
+import mirari.piles.PiledItem
 
-class Entry {
+class Entry implements PiledItem {
 
     String id
 
@@ -11,12 +12,14 @@ class Entry {
 
     List<Block> blocks
 
-    List<Pile> piles
-
     Site owner
 
     Date dateCreated
     Date lastUpdated
+
+    public double getPilePosition() {
+        (double) dateCreated.time
+    }
 
     static constraints = {
     }

@@ -7,5 +7,5 @@ package mirari.piles;
 public interface PiledItem {
     public String getId();
 
-    public int getPosition();
+    public double getPilePosition();
 }
