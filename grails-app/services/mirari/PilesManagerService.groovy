@@ -14,6 +14,8 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
 
     @Override
     void put(final Entry item, final Pile pile, boolean first) {
+        if (!item || !pile) throw new IllegalArgumentException();
+
         redisService.withRedis { Jedis redis ->
             redis.sadd(entryPilesKey(item), pile.id)
             if (first) {
@@ -27,6 +29,8 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
 
     @Override
     void remove(final Entry item, final Pile pile) {
+        if (!item || !pile) throw new IllegalArgumentException();
+
         redisService.withRedis { Jedis redis ->
             redis.srem(entryPilesKey(item), pile.id)
             redis.lrem pileTopKey(pile), 0, item.id
@@ -36,6 +40,8 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
 
     @Override
     void delete(final Entry item) {
+        if (!item) throw new IllegalArgumentException();
+
         redisService.withRedis { Jedis redis ->
             redis.smembers(entryPilesKey(item)).each { String pileId ->
                 redis.lrem pileTopKey(pileId), 0, item.id
@@ -47,6 +53,8 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
 
     @Override
     void delete(final Pile pile) {
+        if (!pile) throw new IllegalArgumentException();
+
         List<String> items = []
         redisService.withRedis { Jedis redis ->
             items.addAll(redis.lrange(pileTopKey(pile), 0, redis.llen(pileTopKey(pile))))
@@ -65,6 +73,8 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
     }
 
     List<String> drawIds(final Pile pile, long limit, long offset) {
+        if (!limit || !pile) throw new IllegalArgumentException();
+
         List<String> itemIds = []
         redisService.withRedis { Jedis redis ->
             long topCount = redis.llen(pileTopKey(pile))
@@ -80,6 +90,8 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
 
     @Override
     Collection<Pile> getPiles(final Entry item) {
+        if (!item) throw new IllegalArgumentException();
+
         List<String> pilesIds = []
         redisService.withRedis { Jedis redis ->
             pilesIds = redis.smembers(entryPilesKey(item))
@@ -89,6 +101,8 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
 
     @Override
     boolean inPile(final Entry item, final Pile pile) {
+        if (!item || !pile) throw new IllegalArgumentException();
+
         boolean i = false
         redisService.withRedis {Jedis redis ->
             i = redis.sismember(entryPilesKey(item), pile.id)
@@ -98,6 +112,8 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
 
     @Override
     void setPosition(final Entry item, final Pile pile, int position) {
+        if (!item || !pile || position == null) throw new IllegalArgumentException();
+
         final String topIndex = pileTopKey(pile)
         redisService.withRedis { Jedis redis ->
             if (!redis.sismember(entryPilesKey(item), pile.id)) {
@@ -156,6 +172,8 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
 
     @Override
     void dropPosition(final Entry item, final Pile pile, boolean withTail) {
+        if (!item || !pile) throw new IllegalArgumentException();
+
         final String topIndex = pileTopKey(pile)
 
         redisService.withRedis { Jedis redis ->
@@ -191,6 +209,8 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
 
     @Override
     List<RelatedPile<Pile>> getRelatedPiles(final Pile pile, int num, int depth) {
+        if (!pile) throw new IllegalArgumentException();
+
         []  //TODO: add related piles collecting; at first -- simply with sorted sets
     }
 

@@ -79,7 +79,9 @@ grails.project.dependency.resolution = {
             excludes "hibernate"
         }
 
-        compile ":twitter-bootstrap:2.0.2.25"
+        compile(":twitter-bootstrap:2.0.2.25") {
+            excludes "svn"
+        }
         compile ":fields:1.1"
 
         compile ":redis:1.3.2"
