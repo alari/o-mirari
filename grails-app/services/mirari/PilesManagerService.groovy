@@ -82,7 +82,7 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
                 itemIds.addAll(redis.lrange(pileTopKey(pile), offset, offset + limit - 1))
             }
             if (itemIds.size() < limit) {
-                itemIds.addAll(redis.zrevrange(pileCommonKey(pile), offset - topCount, limit - itemIds.size() - 1))
+                itemIds.addAll(redis.zrevrange(pileCommonKey(pile), offset - topCount - 1, limit - itemIds.size() - 1))
             }
         }
         itemIds
@@ -108,6 +108,15 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
             i = redis.sismember(entryPilesKey(item), pile.id)
         }
         i
+    }
+
+    @Override
+    long sizeOf(final Pile pile) {
+        long size = 0
+        redisService.withRedis {Jedis redis ->
+            size = redis.llen(pileTopKey(pile)) + redis.zcard(pileCommonKey(pile))
+        }
+        size
     }
 
     @Override

@@ -27,4 +27,6 @@ public interface PilesManager<T extends PiledItem, K extends SortablePile> {
     public Collection<K> getPiles(T item);
 
     public boolean inPile(T item, K pile);
+
+    public long sizeOf(K pile);
 }
