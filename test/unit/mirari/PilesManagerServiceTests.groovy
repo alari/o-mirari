@@ -8,6 +8,8 @@ import grails.test.mixin.TestFor
 @TestFor(PilesManagerService)
 class PilesManagerServiceTests {
 
+    def pilesManagerService
+
     void testSomething() {
         fail "Implement me"
     }

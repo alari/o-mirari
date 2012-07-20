@@ -22,7 +22,9 @@ public interface PilesManager<T extends PiledItem, K extends SortablePile> {
 
     public List<T> draw(K pile, long limit, long offset);
 
-    public List<K> getRelatedPiles(K pile, int num, int depth);
+    public List<RelatedPile<K>> getRelatedPiles(K pile, int num, int depth);
 
     public Collection<K> getPiles(T item);
+
+    public boolean inPile(T item, K pile);
 }

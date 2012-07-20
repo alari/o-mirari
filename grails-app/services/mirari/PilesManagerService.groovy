@@ -1,11 +1,14 @@
 package mirari
 
 import mirari.piles.PilesManager
+import mirari.piles.RelatedPile
 import mirari.struct.Entry
 import mirari.struct.Pile
 import redis.clients.jedis.Jedis
 
 class PilesManagerService implements PilesManager<Entry, Pile> {
+
+    static transactional = false
 
     def redisService
 
@@ -58,6 +61,10 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
 
     @Override
     List<Entry> draw(final Pile pile, long limit, long offset) {
+        drawIds(pile, limit, offset).collect {Entry.get(it)}
+    }
+
+    List<String> drawIds(final Pile pile, long limit, long offset) {
         List<String> itemIds = []
         redisService.withRedis { Jedis redis ->
             long topCount = redis.llen(pileTopKey(pile))
@@ -68,7 +75,7 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
                 itemIds.addAll(redis.zrevrange(pileCommonKey(pile), offset - topCount, limit - itemIds.size() - 1))
             }
         }
-        itemIds.collect {Entry.get(it)}
+        itemIds
     }
 
     @Override
@@ -80,43 +87,111 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
         pilesIds.collect {Pile.get(it)}
     }
 
+    @Override
+    boolean inPile(final Entry item, final Pile pile) {
+        boolean i = false
+        redisService.withRedis {Jedis redis ->
+            i = redis.sismember(entryPilesKey(item), pile.id)
+        }
+        i
+    }
 
     @Override
     void setPosition(final Entry item, final Pile pile, int position) {
-        // TODO: set position in a top list (at first look where is an item, then if position in top list or not, ,,,)
+        final String topIndex = pileTopKey(pile)
+        redisService.withRedis { Jedis redis ->
+            if (!redis.sismember(entryPilesKey(item), pile.id)) {
+                // Not in a pile
+                return;
+            }
+            int topCount = redis.llen(topIndex)
+            // where it is?
+            if (redis.zrank(pileCommonKey(pile), item.id)) {
+                // it's in commons
+                redis.zrem(pileCommonKey(pile), item.id)
+                if (position > topCount) {
+                    // Move the top of common pile to top list, and our item
+                    redis.zrange(pileCommonKey(pile), 0, position - topCount - 2).each {
+                        redis.rpush(topIndex, it)
+                        redis.zrem(pileCommonKey(pile), it)
+                    }
+                    redis.lpush(topIndex, item.id)
+                } else if (position == topCount) {
+                    redis.rpush(topIndex, item.id)
+                } else {
+                    List<String> tailObjects = []
+                    for (int i = topCount; i >= position; i--) {
+                        tailObjects[] = redis.rpop(topIndex)
+                    }
+                    redis.rpush(topIndex, item.id)
+                    tailObjects.reverse().each { redis.rpush(topIndex, item.id) }
+                }
+            } else {
+                // in top list, so we should rearrange items between an old and new position
+                int oldPosition = 0
+                while (redis.lindex(topIndex, oldPosition) != item.id && oldPosition <= topCount) {
+                    oldPosition++
+                }
+                if (oldPosition == position) {
+                    return
+                }
+                int min = Math.min(oldPosition, position)
+                int max = min == oldPosition ? position : oldPosition
+                int move = oldPosition > position ? -1 : 1
+
+                List<String> ids = redis.lrange(topIndex, min, max - 1)
+                for (int i = 1; i < ids.size() - 1; i++) {
+                    redis.lset(topIndex, i + min + move, ids[i])
+                }
+                if (move > 0) {
+                    redis.lset(topIndex, min, item.id)
+                    redis.lset(topIndex, min + 1, ids.first())
+                } else {
+                    redis.lset(topIndex, max - 1, item.id)
+                    redis.lset(topIndex, max - 2, ids.last())
+                }
+            }
+        }
     }
 
     @Override
     void dropPosition(final Entry item, final Pile pile, boolean withTail) {
+        final String topIndex = pileTopKey(pile)
+
         redisService.withRedis { Jedis redis ->
-            if (withTail) {
+            if (!redis.sismember(entryPilesKey(item), pile.id)) {
+                // Not in a pile
+                return;
+            } else if (withTail) {
+                // Remove this item and all the following ones
                 List<String> removeIds = []
                 int i = -1
                 String id
                 for (
-                        id = redis.lindex(pileTopKey(pile), -1);
+                        id = redis.lindex(topIndex, -1);
                         id && id != item.id;
-                        id = redis.lindex(pileTopKey(pile), --i)
+                        id = redis.lindex(topIndex, --i)
                 ) {
                     removeIds.add(id)
                 }
                 if (id == item.id) {
                     removeIds.add(id)
                     for (String rmId in removeIds) {
-                        redis.lrem(pileTopKey(pile), 0, rmId)
+                        redis.lrem(topIndex, 0, rmId)
                         redis.zadd(pileCommonKey(pile), Entry.get(rmId)?.pilePosition, rmId)
                     }
                 }
             } else {
-                redis.lrem(pileTopKey(pile), 0, item.id)
+                // Remove this item only
+                redis.lrem(topIndex, 0, item.id)
                 redis.zadd(pileCommonKey(pile), item.pilePosition, item.id)
             }
         }
     }
 
     @Override
-    List<Pile> getRelatedPiles(final Pile pile, int num, int depth) {
-        return null  //TODO: add related piles collecting; at first -- simply with sorted sets
+    List<RelatedPile<Pile>> getRelatedPiles(final Pile pile, int num, int depth) {
+        []  //TODO: add related piles collecting; at first -- simply with sorted sets
     }
 
     private String entryPilesKey(final Entry entry) { entryPilesKey(entry.id) }
