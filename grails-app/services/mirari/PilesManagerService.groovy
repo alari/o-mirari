@@ -1,7 +1,6 @@
 package mirari
 
 import mirari.piles.PilesManager
-import mirari.piles.RelatedPile
 import mirari.struct.Entry
 import mirari.struct.Pile
 import redis.clients.jedis.Jedis
@@ -70,6 +69,32 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
     @Override
     List<Entry> draw(final Pile pile, long limit, long offset) {
         drawIds(pile, limit, offset).collect {Entry.get(it)}
+    }
+
+    @Override
+    List<Pile> getRelatedPiles(final Pile pile, int num, double fromPosition, int lookMin, int lookMax) {
+        List<String> pileIds = []
+        redisService.withRedis {Jedis redis ->
+            List<String> matchingEntries = redis.lrange(pileTopKey(pile), 0, lookMax)
+
+            int matchingEntriesCount = redis.zcount(pileCommonKey(pile), fromPosition.toString(), "+inf")
+            if(matchingEntriesCount > lookMax) matchingEntriesCount = lookMax
+            if(matchingEntriesCount < lookMin) matchingEntriesCount = Math.min((long)lookMin, redis.zcard(pileCommonKey(pile)))
+            matchingEntries.addAll redis.zrange(pileCommonKey(pile), 0, matchingEntriesCount)
+
+            Map<String,Integer> piles = [:]
+            matchingEntries.each {entryId->
+                redis.smembers(entryPilesKey(entryId)).asList().each {entryPileId->
+                    if(!piles.containsKey(entryPileId)) {
+                        piles.put(entryPileId, 1)
+                    } else {
+                        piles[entryPileId]++
+                    }
+                }
+            }
+            piles.sort({a, b -> b.value <=> a.value}).take(num).each {pileIds.add(it.key)}
+        }
+        pileIds.collect {Pile.get(it)}
     }
 
     List<String> drawIds(final Pile pile, long limit, long offset) {
@@ -189,7 +214,8 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
             if (!redis.sismember(entryPilesKey(item), pile.id)) {
                 // Not in a pile
                 return;
-            } else if (withTail) {
+            }
+            if (withTail) {
                 // Remove this item and all the following ones
                 List<String> removeIds = []
                 int i = -1
@@ -214,13 +240,6 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
                 redis.zadd(pileCommonKey(pile), item.pilePosition, item.id)
             }
         }
-    }
-
-    @Override
-    List<RelatedPile<Pile>> getRelatedPiles(final Pile pile, int num, int depth) {
-        if (!pile) throw new IllegalArgumentException();
-
-        []  //TODO: add related piles collecting; at first -- simply with sorted sets
     }
 
     private String entryPilesKey(final Entry entry) { entryPilesKey(entry.id) }
