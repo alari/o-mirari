@@ -108,6 +108,7 @@ class PilesManagerServiceTests {
                 newEntry,
         ]
 
+        // sort top two ones
         service.delete(pile)
         assert service.sizeOf(pile) == 0
         assert service.drawIds(pile, 1, 0).size() == 0
@@ -124,7 +125,15 @@ class PilesManagerServiceTests {
         service.setPosition(entries[0], pile, 0)
         assert service.drawIds(pile, 2, 0) == [entries[0].id, entries[1].id]
 
+        // sort one additional
+        service.put(entries[2], pile, false)
+        assert service.drawIds(pile, 20, 0) == [entries[0].id, entries[1].id, entries[2].id]
 
+        service.setPosition(entries[2], pile, 0)
+        assert service.drawIds(pile, 20, 0) == [entries[2].id, entries[0].id, entries[1].id]
+
+        service.dropPosition(entries[2], pile, false)
+        assert service.drawIds(pile, 20, 0) == [entries[0].id, entries[1].id, entries[2].id]
     }
 
     private Entry getNewEntry(double pilePos = 2.7d) {

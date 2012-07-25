@@ -18,10 +18,10 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
         redisService.withRedis { Jedis redis ->
             redis.sadd(entryPilesKey(item), pile.id)
             if (first) {
-                redis.lrem pileTopKey(pile), 0, item.id
-                redis.lpush pileTopKey(pile), item.id
+                redis.lrem(pileTopKey(pile), 0, item.id)
+                redis.lpush(pileTopKey(pile), item.id )
             } else {
-                redis.zadd pileCommonKey(pile), item.pilePosition, item.id
+                redis.zadd(pileCommonKey(pile), item.pilePosition, item.id)
             }
         }
     }
@@ -154,9 +154,9 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
                 // Not in a pile
                 return;
             }
-            int topCount = redis.llen(topIndex)
+            int topCount = redis.llen(topIndex);
             // where it is?
-            if (redis.zrank(pileCommonKey(pile), item.id)) {
+            if (redis.zscore(pileCommonKey(pile), item.id) != null) {
                 // it's in commons
                 redis.zrem(pileCommonKey(pile), item.id)
                 if (position > topCount) {
@@ -171,7 +171,7 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
                 } else {
                     List<String> tailObjects = []
                     for (int i = topCount; i >= position; i--) {
-                        tailObjects[] = redis.rpop(topIndex)
+                        tailObjects.add(redis.rpop(topIndex))
                     }
                     redis.rpush(topIndex, item.id)
                     tailObjects.reverse().each { redis.rpush(topIndex, item.id) }
@@ -186,7 +186,7 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
                     return
                 }
                 int min = Math.min(oldPosition, position)
-                int max = min == oldPosition ? position : oldPosition
+                int max = Math.max(oldPosition, position)
                 int move = oldPosition > position ? -1 : 1
 
                 List<String> ids = redis.lrange(topIndex, min, max - 1)
