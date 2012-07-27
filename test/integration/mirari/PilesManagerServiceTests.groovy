@@ -106,6 +106,7 @@ class PilesManagerServiceTests {
                 newEntry,
                 newEntry,
                 newEntry,
+                newEntry,
         ]
 
         // sort top two ones
@@ -129,12 +130,47 @@ class PilesManagerServiceTests {
         service.put(entries[2], pile, false)
         assert service.drawIds(pile, 20, 0) == [entries[0].id, entries[1].id, entries[2].id]
 
+        // put first
         service.setPosition(entries[2], pile, 0)
         List ids = [entries[2].id, entries[0].id, entries[1].id]
         assert service.drawIds(pile, 20, 0) == ids
 
         service.dropPosition(entries[2], pile, false)
         assert service.drawIds(pile, 20, 0) == [entries[0].id, entries[1].id, entries[2].id]
+
+        // put last
+        service.setPosition(entries[2], pile, 2)
+        ids = [entries[0].id, entries[1].id, entries[2].id]
+        assert service.drawIds(pile, 20, 0) == ids
+
+        service.dropPosition(entries[2], pile, false)
+        assert service.drawIds(pile, 20, 0) == [entries[0].id, entries[1].id, entries[2].id]
+
+        // put second
+        service.setPosition(entries[2], pile, 1)
+        ids = [entries[0].id, entries[2].id, entries[1].id]
+        assert service.drawIds(pile, 20, 0) == ids
+
+        service.dropPosition(entries[2], pile, false)
+        assert service.drawIds(pile, 20, 0) == [entries[0].id, entries[1].id, entries[2].id]
+
+        // add one more
+        service.put(entries[3], pile, false)
+        ids = [entries[0].id, entries[1].id, entries[3].id, entries[2].id]
+        assert service.drawIds(pile, 20, 0) == ids
+
+        service.put(entries[4], pile, false)
+        ids = [entries[0].id, entries[1].id, entries[4].id, entries[3].id, entries[2].id]
+        assert service.drawIds(pile, 20, 0) == ids
+
+        // put second
+        service.setPosition(entries[3], pile, 1)
+        ids = [entries[0].id, entries[3].id, entries[1].id, entries[4].id, entries[2].id]
+        assert service.drawIds(pile, 20, 0) == ids
+
+        service.dropPosition(entries[3], pile, false)
+        ids = [entries[0].id, entries[1].id, entries[4].id, entries[3].id, entries[2].id]
+        assert service.drawIds(pile, 20, 0) == ids
     }
 
     private int entriesNum=0
