@@ -170,11 +170,13 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
                     redis.rpush(topIndex, item.id)
                 } else {
                     List<String> tailObjects = []
-                    for (int i = topCount; i >= position; i--) {
-                        tailObjects.add(redis.rpop(topIndex))
+                    for (int i = topCount; i > position; i--) {
+                        tailObjects.add redis.rpop(topIndex)
                     }
                     redis.rpush(topIndex, item.id)
-                    tailObjects.reverse().each { redis.rpush(topIndex, item.id) }
+                    tailObjects.reverse().each {
+                        redis.rpush(topIndex, it)
+                    }
                 }
             } else {
                 // in top list, so we should rearrange items between an old and new position

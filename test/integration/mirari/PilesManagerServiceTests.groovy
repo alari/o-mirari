@@ -130,16 +130,20 @@ class PilesManagerServiceTests {
         assert service.drawIds(pile, 20, 0) == [entries[0].id, entries[1].id, entries[2].id]
 
         service.setPosition(entries[2], pile, 0)
-        assert service.drawIds(pile, 20, 0) == [entries[2].id, entries[0].id, entries[1].id]
+        List ids = [entries[2].id, entries[0].id, entries[1].id]
+        assert service.drawIds(pile, 20, 0) == ids
 
         service.dropPosition(entries[2], pile, false)
         assert service.drawIds(pile, 20, 0) == [entries[0].id, entries[1].id, entries[2].id]
     }
 
-    private Entry getNewEntry(double pilePos = 2.7d) {
+    private int entriesNum=0
+
+    private Entry getNewEntry(double pilePos = 0) {
         Entry e = new Entry()
-        e.id = RandomStringUtils.randomAlphabetic(5)
-        e.metaClass.getPilePosition = {pilePos}
+        e.id = "m-"+entriesNum
+        e.metaClass.getPilePosition = {pilePos ?: (double)entriesNum}
+        entriesNum++
         e
     }
 }
