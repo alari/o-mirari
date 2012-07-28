@@ -29,7 +29,7 @@ class PilesManagerServiceTests {
         Pile pile = new Pile()
 
         entry.id = "test id"
-        entry.metaClass.getPilePosition = {2.75d}
+        entry.dateCreated = new Date()
         pile.id = "p"
 
         service.delete(pile)
@@ -58,9 +58,7 @@ class PilesManagerServiceTests {
         assert s == ["test 2", "test id", "test 3"]
 
         entry.id = "test 4"
-        assert entry.pilePosition == 2.75d
-        entry.metaClass.getPilePosition = {1d}
-        assert entry.pilePosition == 1d
+        entry.dateCreated.time -= 10
 
         service.put(entry, pile, false)
         assert service.sizeOf(pile) == 4
@@ -69,7 +67,7 @@ class PilesManagerServiceTests {
         assert s == ["test 2", "test id", "test 3", "test 4"]
 
         entry.id = "test_5"
-        entry.metaClass.getPilePosition = {100d}
+        entry.dateCreated.time += 1000
 
         service.put(entry, pile, false)
         assert service.sizeOf(pile) == 5
@@ -81,7 +79,7 @@ class PilesManagerServiceTests {
         service.delete(pile)
 
         entry.id = "1"
-        entry.metaClass.getPilePosition = {1d}
+        entry.dateCreated.time -= 10000
         service.put(entry, pile, false)
         assert service.sizeOf(pile) == 1
         s = service.drawIds(pile, 100, 0)
@@ -173,7 +171,7 @@ class PilesManagerServiceTests {
         assert service.drawIds(pile, 20, 0) == ids
 
         // test with tail
-        service.metaClass.getEntry = {String id->entries.find {it.id == id}}
+        service.metaClass.getItem = {String id->entries.find {it.id == id}}
         service.dropPosition(entries[0], pile, true)
         ids = [entries[4].id, entries[3].id, entries[2].id, entries[1].id, entries[0].id]
         assert service.drawIds(pile, 5, 0) == ids
@@ -184,7 +182,7 @@ class PilesManagerServiceTests {
     private Entry getNewEntry(double pilePos = 0) {
         Entry e = new Entry()
         e.id = "m-"+entriesNum
-        e.metaClass.getPilePosition = {pilePos ?: (double)entriesNum}
+        e.dateCreated = new Date((int)pilePos ?: entriesNum, 0, 0)
         entriesNum++
         e
     }

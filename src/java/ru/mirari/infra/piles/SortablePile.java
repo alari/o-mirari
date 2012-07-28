@@ -1,4 +1,4 @@
-package mirari.piles;
+package ru.mirari.infra.piles;
 
 /**
  * @author alari

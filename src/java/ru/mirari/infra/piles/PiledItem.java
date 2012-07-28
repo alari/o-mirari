@@ -1,4 +1,4 @@
-package mirari.piles;
+package ru.mirari.infra.piles;
 
 /**
  * @author alari
@@ -6,6 +6,4 @@ package mirari.piles;
  */
 public interface PiledItem {
     public String getId();
-
-    public double getPilePosition();
 }

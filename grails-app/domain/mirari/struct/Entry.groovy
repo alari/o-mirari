@@ -2,7 +2,7 @@ package mirari.struct
 
 import mirari.Site
 import mirari.data.Block
-import mirari.piles.PiledItem
+import ru.mirari.infra.piles.PiledItem
 
 class Entry implements PiledItem {
 
@@ -14,12 +14,8 @@ class Entry implements PiledItem {
 
     Site owner
 
-    Date dateCreated
+    Date dateCreated = new Date()
     Date lastUpdated
-
-    public double getPilePosition() {
-        (double) dateCreated.time
-    }
 
     static constraints = {
     }
