@@ -133,7 +133,7 @@ class PilesManagerServiceTests {
         // put first
         service.setPosition(entries[2], pile, 0)
         List ids = [entries[2].id, entries[0].id, entries[1].id]
-        assert service.drawIds(pile, 20, 0) == ids
+        assert service.drawIds(pile, 3, 0) == ids
 
         service.dropPosition(entries[2], pile, false)
         assert service.drawIds(pile, 20, 0) == [entries[0].id, entries[1].id, entries[2].id]
@@ -149,7 +149,7 @@ class PilesManagerServiceTests {
         // put second
         service.setPosition(entries[2], pile, 1)
         ids = [entries[0].id, entries[2].id, entries[1].id]
-        assert service.drawIds(pile, 20, 0) == ids
+        assert service.drawIds(pile, 3, 0) == ids
 
         service.dropPosition(entries[2], pile, false)
         assert service.drawIds(pile, 20, 0) == [entries[0].id, entries[1].id, entries[2].id]
@@ -157,7 +157,7 @@ class PilesManagerServiceTests {
         // add one more
         service.put(entries[3], pile, false)
         ids = [entries[0].id, entries[1].id, entries[3].id, entries[2].id]
-        assert service.drawIds(pile, 20, 0) == ids
+        assert service.drawIds(pile, 4, 0) == ids
 
         service.put(entries[4], pile, false)
         ids = [entries[0].id, entries[1].id, entries[4].id, entries[3].id, entries[2].id]
@@ -166,11 +166,17 @@ class PilesManagerServiceTests {
         // put second
         service.setPosition(entries[3], pile, 1)
         ids = [entries[0].id, entries[3].id, entries[1].id, entries[4].id, entries[2].id]
-        assert service.drawIds(pile, 20, 0) == ids
+        assert service.drawIds(pile, 5, 0) == ids
 
         service.dropPosition(entries[3], pile, false)
         ids = [entries[0].id, entries[1].id, entries[4].id, entries[3].id, entries[2].id]
         assert service.drawIds(pile, 20, 0) == ids
+
+        // test with tail
+        service.metaClass.getEntry = {String id->entries.find {it.id == id}}
+        service.dropPosition(entries[0], pile, true)
+        ids = [entries[4].id, entries[3].id, entries[2].id, entries[1].id, entries[0].id]
+        assert service.drawIds(pile, 5, 0) == ids
     }
 
     private int entriesNum=0

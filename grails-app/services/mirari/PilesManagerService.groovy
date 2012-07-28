@@ -104,10 +104,10 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
         redisService.withRedis { Jedis redis ->
             long topCount = redis.llen(pileTopKey(pile))
             if (topCount <= offset + limit) {
-                itemIds.addAll(redis.lrange(pileTopKey(pile), offset, offset + limit - 1))
+                itemIds.addAll(redis.lrange(pileTopKey(pile), offset, Math.min(offset + limit - 1, topCount)))
             }
             if (itemIds.size() < limit) {
-                itemIds.addAll(redis.zrevrange(pileCommonKey(pile), offset - topCount - 1, limit - itemIds.size() - 1))
+                itemIds.addAll(redis.zrevrange(pileCommonKey(pile), Math.max(offset - topCount - 1, 0), limit - itemIds.size() - 1))
             }
         }
         itemIds
@@ -233,7 +233,7 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
                     removeIds.add(id)
                     for (String rmId in removeIds) {
                         redis.lrem(topIndex, 0, rmId)
-                        redis.zadd(pileCommonKey(pile), Entry.get(rmId)?.pilePosition, rmId)
+                        redis.zadd(pileCommonKey(pile), getEntry(rmId).pilePosition, rmId)
                     }
                 }
             } else {
@@ -242,6 +242,10 @@ class PilesManagerService implements PilesManager<Entry, Pile> {
                 redis.zadd(pileCommonKey(pile), item.pilePosition, item.id)
             }
         }
+    }
+
+    private Entry getEntry(final String id) {
+        Entry.get(id)
     }
 
     private String entryPilesKey(final Entry entry) { entryPilesKey(entry.id) }
