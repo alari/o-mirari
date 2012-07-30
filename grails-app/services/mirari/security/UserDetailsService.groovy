@@ -12,9 +12,8 @@ class UserDetailsService extends GormUserDetailsService {
         def user = Account.findByEmail(username)
 
         if (!user) {
-            println("Fuck $username")
             log.warn "User not found: $username"
-            throw new UsernameNotFoundException('User not found', username)
+            throw new UsernameNotFoundException('User not found')
         }
 
         Collection<GrantedAuthority> authorities = loadAuthorities(user, username, loadRoles)

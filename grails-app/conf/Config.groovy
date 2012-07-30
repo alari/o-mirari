@@ -161,7 +161,7 @@ mirari {
             local {
                 localRoot = "./web-app/f/"
                 defaultBucket = "storage"
-                urlRoot = "http://metamir.com/f/"
+                urlRoot = "/f/"
             }
             s3 {
                 accessKey = "AKIAINSHY2QZWHPJLZ5A"
@@ -206,4 +206,4 @@ grails {
 
     }
 }
-grails.mail.default.from="name.alari@gmail.com"
+grails.mail.default.from="noreply@mirari.ru"

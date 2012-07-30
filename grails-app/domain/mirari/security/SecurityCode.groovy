@@ -1,7 +1,7 @@
 package mirari.security
 
 class SecurityCode {
-
+    static mapWith = "mongo"
     String id
 
     String token = UUID.randomUUID().toString().replaceAll("-", "");

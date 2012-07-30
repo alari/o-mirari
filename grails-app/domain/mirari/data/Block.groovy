@@ -4,6 +4,8 @@ import mirari.struct.Entry
 
 class Block {
 
+    static mapWith = "mongo"
+
     String id
 
     BlockContent content

@@ -3,6 +3,7 @@ package mirari.security
 import mirari.Site
 
 class Account {
+    static mapWith = "mongo"
     String id
 
 	String email

@@ -10,7 +10,7 @@ grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
     inherits("global") {
         // uncomment to disable ehcache
-        excludes 'hibernate'
+        // excludes 'hibernate'
     }
     log "error" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
     checksums true // Whether to verify checksums on resolve
@@ -57,10 +57,10 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
+        compile ":hibernate:$grailsVersion"
+
         runtime ":jquery:1.7.2"
-        runtime ":resources:1.2-RC1", {
-            excludes "hibernate"
-        }
+        runtime ":resources:1.2-RC1"
 
         compile ":mongodb:1.0.0.GA"
 
@@ -68,16 +68,12 @@ grails.project.dependency.resolution = {
         //runtime ":cached-resources:1.0"
         runtime ":yui-minify-resources:0.1.5"
 
-        test ":spock:0.6", {
-            excludes "hibernate"
-        }
+        test ":spock:0.6"
 
         compile ":mail:1.0"
 
         // SECURITY
-        runtime(':spring-security-core:1.2.7.3') {
-            excludes "hibernate"
-        }
+        runtime(':spring-security-core:1.2.7.3')
 
         compile(":twitter-bootstrap:2.0.2.25") {
             excludes "svn"

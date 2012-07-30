@@ -4,7 +4,7 @@ import mirari.security.Account
 import mirari.security.SiteKind
 
 class Site {
-
+    static mapWith = "mongo"
     String id
 
     String name

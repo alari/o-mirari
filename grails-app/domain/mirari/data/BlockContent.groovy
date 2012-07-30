@@ -2,6 +2,8 @@ package mirari.data
 
 class BlockContent {
 
+    static mapWith = "mongo"
+
     String id
 
     String text
