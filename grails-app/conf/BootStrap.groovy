@@ -2,6 +2,8 @@ import ru.mirari.infra.ApplicationContextHolder
 import mirari.Site
 import mirari.repo.SiteRepo
 import mirari.security.SiteKind
+import grails.util.Environment
+import grails.plugin.redis.RedisService
 
 class BootStrap {
 
@@ -20,6 +22,12 @@ class BootStrap {
             throw new Exception(portal.errors.toString())
         }
         println "Portal saved: "+portal
+
+        if(Environment.isDevelopmentMode()) {
+            RedisService redisService = (RedisService)ApplicationContextHolder.getBean("redisService");
+            redisService.deleteKeysWithPattern("*")
+            println "Deleting All Redis Keys"
+        }
 
     }
     def destroy = {

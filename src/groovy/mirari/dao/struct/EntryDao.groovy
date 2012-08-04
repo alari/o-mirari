@@ -11,4 +11,8 @@ import org.springframework.stereotype.Component
  */
 @Component("entryRepo")
 class EntryDao extends Dao<Entry> implements EntryRepo {
+    @Override
+    Entry getById(id) {
+        Entry.get(id)
+    }
 }

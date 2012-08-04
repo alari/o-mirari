@@ -22,12 +22,17 @@ class PilesManagerService extends PilesSortingService<Entry, Pile> {
     }
 
     @Override
-    protected double getItemPilePositionById(final String id) {
-        getItemPilePosition(getItemById(id))
+    protected double getItemPilePositionById(final String id, final String pileId) {
+        getItemPilePosition(getItemById(id), getPileById(pileId))
     }
 
     @Override
-    protected double getItemPilePosition(final Entry entry) {
+    protected double getItemPilePositionById(final String entryId, final Pile pile) {
+        getItemPilePosition(getItemById(entryId), pile)
+    }
+
+    @Override
+    protected double getItemPilePosition(final Entry entry, final Pile pile) {
         (double) entry.dateCreated.time
     }
 }

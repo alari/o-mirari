@@ -12,7 +12,7 @@ import mirari.dao.Dao
 @Component("accountRepo")
 class AccountDao extends Dao<Account> implements AccountRepo {
     @Override
-    Account getById(String id) {
+    Account getById(id) {
         Account.get(id)
     }
 

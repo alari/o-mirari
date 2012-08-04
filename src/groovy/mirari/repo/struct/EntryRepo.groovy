@@ -8,5 +8,5 @@ import mirari.struct.Entry
  * @since 6/14/12 8:54 PM
  */
 public interface EntryRepo extends Repo<Entry> {
-
+    Entry getById(id)
 }

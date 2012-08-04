@@ -13,12 +13,19 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
         if (!item || !pile) throw new IllegalArgumentException();
 
         redisService.withRedis { Jedis redis ->
-            redis.sadd(keyItemPiles(item), pile.stringId)
-            if (first) {
-                redis.lrem(keyPileTop(pile), 0, item.stringId)
-                redis.lpush(keyPileTop(pile), item.stringId)
+            if (redis.sadd(keyItemPiles(item), pile.stringId)) {
+                if (first) {
+                    redis.lrem(keyPileTop(pile), 0, item.stringId)
+                    redis.lpush(keyPileTop(pile), item.stringId)
+                } else {
+                    redis.zadd(keyPileCommon(pile), getItemPilePosition(item, pile), item.stringId)
+                }
             } else {
-                redis.zadd(keyPileCommon(pile), getItemPilePosition(item), item.stringId)
+                if (first) {
+                    setPosition(item, pile, 0)
+                } else {
+                    dropPosition(item, pile, false)
+                }
             }
         }
     }
@@ -230,13 +237,13 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
                     removeIds.add(id)
                     for (String rmId in removeIds) {
                         redis.lrem(topIndex, 0, rmId)
-                        redis.zadd(keyPileCommon(pile), getItemPilePositionById(rmId), rmId)
+                        redis.zadd(keyPileCommon(pile), getItemPilePositionById(rmId, pile), rmId)
                     }
                 }
             } else {
                 // Remove this item only
                 redis.lrem(topIndex, 0, item.stringId)
-                redis.zadd(keyPileCommon(pile), getItemPilePosition(item), item.stringId)
+                redis.zadd(keyPileCommon(pile), getItemPilePosition(item, pile), item.stringId)
             }
         }
     }
@@ -245,9 +252,11 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
 
     abstract protected P getPileById(final String id)
 
-    abstract protected double getItemPilePositionById(final String id)
+    abstract protected double getItemPilePositionById(final String id, final String pileId)
 
-    abstract protected double getItemPilePosition(final I entry)
+    abstract protected double getItemPilePositionById(final String entryId, final P pile)
+
+    abstract protected double getItemPilePosition(final I entry, final P pile)
 
     abstract protected RedisService getRedisService()
 

@@ -7,7 +7,7 @@ import mirari.repo.Repo
  * @since 5/4/12 6:05 PM
  */
 abstract class Dao<T> implements Repo<T> {
-    void save(T o) {
+    boolean save(T o) {
         o.save()
     }
 

@@ -8,7 +8,7 @@ import mirari.repo.Repo
  * @since 5/4/12 6:02 PM
  */
 interface AccountRepo extends Repo<Account> {
-    Account getById(String id)
+    Account getById(id)
 
     boolean emailExists(String email)
 

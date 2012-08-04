@@ -16,7 +16,7 @@ class Entry implements PiledItem {
     Site owner
 
     Date dateCreated = new Date()
-    Date lastUpdated
+    Date lastUpdated = new Date()
 
     static constraints = {
     }
