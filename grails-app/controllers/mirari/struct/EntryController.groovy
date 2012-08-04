@@ -26,8 +26,8 @@ class EntryController {
             return
         }
 
-		flash.message = message(code: 'default.created.message', args: [message(code: 'entry.label', default: 'Entry'), entryInstance.id])
-        redirect(action: "show", id: entryInstance.id)
+		flash.message = message(code: 'default.created.message', args: [message(code: 'entry.label', default: 'Entry'), entryInstance.stringId])
+        redirect(action: "show", id: entryInstance.stringId)
     }
 
     def show() {
@@ -78,8 +78,8 @@ class EntryController {
             return
         }
 
-		flash.message = message(code: 'default.updated.message', args: [message(code: 'entry.label', default: 'Entry'), entryInstance.id])
-        redirect(action: "show", id: entryInstance.id)
+		flash.message = message(code: 'default.updated.message', args: [message(code: 'entry.label', default: 'Entry'), entryInstance.stringId])
+        redirect(action: "show", id: entryInstance.stringId)
     }
 
     def delete() {

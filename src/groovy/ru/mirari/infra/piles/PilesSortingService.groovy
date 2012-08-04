@@ -1,25 +1,24 @@
 package ru.mirari.infra.piles
 
 import grails.plugin.redis.RedisService
-import org.springframework.beans.factory.annotation.Autowired
 import redis.clients.jedis.Jedis
 
 /**
  * @author alari
  * @since 7/28/12 11:21 PM
  */
-abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> implements PilesManager<I,P> {
+abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> implements PilesManager<I, P> {
     @Override
     void put(final I item, final P pile, boolean first) {
         if (!item || !pile) throw new IllegalArgumentException();
 
         redisService.withRedis { Jedis redis ->
-            redis.sadd(keyItemPiles(item), pile.id)
+            redis.sadd(keyItemPiles(item), pile.stringId)
             if (first) {
-                redis.lrem(keyPileTop(pile), 0, item.id)
-                redis.lpush(keyPileTop(pile), item.id )
+                redis.lrem(keyPileTop(pile), 0, item.stringId)
+                redis.lpush(keyPileTop(pile), item.stringId)
             } else {
-                redis.zadd(keyPileCommon(pile), getItemPilePosition(item), item.id)
+                redis.zadd(keyPileCommon(pile), getItemPilePosition(item), item.stringId)
             }
         }
     }
@@ -29,9 +28,9 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
         if (!item || !pile) throw new IllegalArgumentException();
 
         redisService.withRedis { Jedis redis ->
-            redis.srem(keyItemPiles(item), pile.id)
-            redis.lrem keyPileTop(pile), 0, item.id
-            redis.zrem keyPileCommon(pile), item.id
+            redis.srem(keyItemPiles(item), pile.stringId)
+            redis.lrem keyPileTop(pile), 0, item.stringId
+            redis.zrem keyPileCommon(pile), item.stringId
         }
     }
 
@@ -41,8 +40,8 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
 
         redisService.withRedis { Jedis redis ->
             redis.smembers(keyItemPiles(item)).each { String pileId ->
-                redis.lrem keyPileTop(pileId), 0, item.id
-                redis.zrem keyPileCommon(pileId), item.id
+                redis.lrem keyPileTopById(pileId), 0, item.stringId
+                redis.zrem keyPileCommonById(pileId), item.stringId
             }
             redis.del keyItemPiles(item)
         }
@@ -57,7 +56,7 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
             items.addAll(redis.lrange(keyPileTop(pile), 0, redis.llen(keyPileTop(pile))))
             items.addAll(redis.zrange(keyPileCommon(pile), 0, redis.zcard(keyPileCommon(pile))))
             items.each { String itemId ->
-                redis.srem(keyItemPiles(itemId), pile.id)
+                redis.srem(keyItemPilesById(itemId), pile.stringId)
             }
             redis.del keyPileTop(pile)
             redis.del keyPileCommon(pile)
@@ -66,7 +65,7 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
 
     @Override
     List<I> draw(final P pile, long limit, long offset) {
-        drawIds(pile, limit, offset).collect {getItem(it)}
+        drawIds(pile, limit, offset).collect {getItemById(it)}
     }
 
     @Override
@@ -76,14 +75,14 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
             List<String> matchingEntries = redis.lrange(keyPileTop(pile), 0, lookMax)
 
             int matchingEntriesCount = redis.zcount(keyPileCommon(pile), fromPosition.toString(), "+inf")
-            if(matchingEntriesCount > lookMax) matchingEntriesCount = lookMax
-            if(matchingEntriesCount < lookMin) matchingEntriesCount = Math.min((long)lookMin, redis.zcard(keyPileCommon(pile)))
+            if (matchingEntriesCount > lookMax) matchingEntriesCount = lookMax
+            if (matchingEntriesCount < lookMin) matchingEntriesCount = Math.min((long) lookMin, redis.zcard(keyPileCommon(pile)))
             matchingEntries.addAll redis.zrange(keyPileCommon(pile), 0, matchingEntriesCount)
 
-            Map<String,Integer> piles = [:]
-            matchingEntries.each {entryId->
-                redis.smembers(keyItemPiles(entryId)).asList().each {entryPileId->
-                    if(!piles.containsKey(entryPileId)) {
+            Map<String, Integer> piles = [:]
+            matchingEntries.each {entryId ->
+                redis.smembers(keyItemPilesById(entryId)).asList().each {entryPileId ->
+                    if (!piles.containsKey(entryPileId)) {
                         piles.put(entryPileId, 1)
                     } else {
                         piles[entryPileId]++
@@ -92,7 +91,7 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
             }
             piles.sort({a, b -> b.value <=> a.value}).take(num).each {pileIds.add(it.key)}
         }
-        pileIds.collect {getPile(it)}
+        pileIds.collect {getPileById(it)}
     }
 
     List<String> drawIds(final P pile, long limit, long offset) {
@@ -119,7 +118,7 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
         redisService.withRedis { Jedis redis ->
             pilesIds = redis.smembers(keyItemPiles(item))
         }
-        pilesIds.collect {getPile(it)}
+        pilesIds.collect {getPileById(it)}
     }
 
     @Override
@@ -128,7 +127,7 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
 
         boolean i = false
         redisService.withRedis {Jedis redis ->
-            i = redis.sismember(keyItemPiles(item), pile.id)
+            i = redis.sismember(keyItemPiles(item), pile.stringId)
         }
         i
     }
@@ -148,30 +147,30 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
 
         final String topIndex = keyPileTop(pile)
         redisService.withRedis { Jedis redis ->
-            if (!redis.sismember(keyItemPiles(item), pile.id)) {
+            if (!redis.sismember(keyItemPiles(item), pile.stringId)) {
                 // Not in a pile
                 return;
             }
             int topCount = redis.llen(topIndex);
             // where it is?
-            if (redis.zscore(keyPileCommon(pile), item.id) != null) {
+            if (redis.zscore(keyPileCommon(pile), item.stringId) != null) {
                 // it's in commons
-                redis.zrem(keyPileCommon(pile), item.id)
+                redis.zrem(keyPileCommon(pile), item.stringId)
                 if (position > topCount) {
                     // Move the top of common pile to top list, and our item
                     redis.zrange(keyPileCommon(pile), 0, position - topCount - 2).each {
                         redis.rpush(topIndex, it)
                         redis.zrem(keyPileCommon(pile), it)
                     }
-                    redis.lpush(topIndex, item.id)
+                    redis.lpush(topIndex, item.stringId)
                 } else if (position == topCount) {
-                    redis.rpush(topIndex, item.id)
+                    redis.rpush(topIndex, item.stringId)
                 } else {
                     List<String> tailObjects = []
                     for (int i = topCount; i > position; i--) {
                         tailObjects.add redis.rpop(topIndex)
                     }
-                    redis.rpush(topIndex, item.id)
+                    redis.rpush(topIndex, item.stringId)
                     tailObjects.reverse().each {
                         redis.rpush(topIndex, it)
                     }
@@ -179,7 +178,7 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
             } else {
                 // in top list, so we should rearrange items between an old and new position
                 int oldPosition = 0
-                while (redis.lindex(topIndex, oldPosition) != item.id && oldPosition <= topCount) {
+                while (redis.lindex(topIndex, oldPosition) != item.stringId && oldPosition <= topCount) {
                     oldPosition++
                 }
                 if (oldPosition == position) {
@@ -194,10 +193,10 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
                     redis.lset(topIndex, i + min + move, ids[i])
                 }
                 if (move > 0) {
-                    redis.lset(topIndex, min, item.id)
+                    redis.lset(topIndex, min, item.stringId)
                     redis.lset(topIndex, min + 1, ids.first())
                 } else {
-                    redis.lset(topIndex, max - 1, item.id)
+                    redis.lset(topIndex, max - 1, item.stringId)
                     redis.lset(topIndex, max - 2, ids.last())
                 }
             }
@@ -211,7 +210,7 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
         final String topIndex = keyPileTop(pile)
 
         redisService.withRedis { Jedis redis ->
-            if (!redis.sismember(keyItemPiles(item), pile.id)) {
+            if (!redis.sismember(keyItemPiles(item), pile.stringId)) {
                 // Not in a pile
                 return;
             }
@@ -222,45 +221,45 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
                 String id
                 for (
                         id = redis.lindex(topIndex, -1);
-                        id && id != item.id;
+                        id && id != item.stringId;
                         id = redis.lindex(topIndex, --i)
                 ) {
                     removeIds.add(id)
                 }
-                if (id == item.id) {
+                if (id == item.stringId) {
                     removeIds.add(id)
                     for (String rmId in removeIds) {
                         redis.lrem(topIndex, 0, rmId)
-                        redis.zadd(keyPileCommon(pile), getItemPilePosition(rmId), rmId)
+                        redis.zadd(keyPileCommon(pile), getItemPilePositionById(rmId), rmId)
                     }
                 }
             } else {
                 // Remove this item only
-                redis.lrem(topIndex, 0, item.id)
-                redis.zadd(keyPileCommon(pile), getItemPilePosition(item), item.id)
+                redis.lrem(topIndex, 0, item.stringId)
+                redis.zadd(keyPileCommon(pile), getItemPilePosition(item), item.stringId)
             }
         }
     }
 
-    abstract protected I getItem(final String id)
+    abstract protected I getItemById(final String id)
 
-    abstract protected P getPile(final String id)
+    abstract protected P getPileById(final String id)
 
-    abstract protected double getItemPilePosition(final String id)
+    abstract protected double getItemPilePositionById(final String id)
 
     abstract protected double getItemPilePosition(final I entry)
 
     abstract protected RedisService getRedisService()
 
-    protected String keyItemPiles(final I entry) { keyItemPiles(entry.id) }
+    protected String keyItemPiles(final I entry) { keyItemPilesById(entry.stringId) }
 
-    protected String keyPileTop(final P pile) { keyPileTop(pile.id) }
+    protected String keyPileTop(final P pile) { keyPileTopById(pile.stringId) }
 
-    protected String keyPileCommon(final P pile) { keyPileCommon(pile.id) }
+    protected String keyPileCommon(final P pile) { keyPileCommonById(pile.stringId) }
 
-    protected String keyItemPiles(final String entryId) { "entry:${entryId}:piles" }
+    protected String keyItemPilesById(final String entryId) { "entry:${entryId}:piles" }
 
-    protected String keyPileTop(final String pileId) { "pile:${pileId}:top" }
+    protected String keyPileTopById(final String pileId) { "pile:${pileId}:top" }
 
-    protected String keyPileCommon(final String pileId) { "pile:${pileId}:common" }
+    protected String keyPileCommonById(final String pileId) { "pile:${pileId}:common" }
 }

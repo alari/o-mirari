@@ -63,7 +63,7 @@ class EntryControllerTests {
 
         assert entry.save() != null
 
-        params.id = entry.id
+        params.id = entry.stringId
 
         def model = controller.show()
 
@@ -82,7 +82,7 @@ class EntryControllerTests {
 
         assert entry.save() != null
 
-        params.id = entry.id
+        params.id = entry.stringId
 
         def model = controller.edit()
 
@@ -104,7 +104,7 @@ class EntryControllerTests {
         assert entry.save() != null
 
         // test invalid parameters in update
-        params.id = entry.id
+        params.id = entry.stringId
         //TODO: add invalid values to params object
 
         controller.update()
@@ -117,7 +117,7 @@ class EntryControllerTests {
         populateValidParams(params)
         controller.update()
 
-        assert response.redirectedUrl == "/entry/show/$entry.id"
+        assert response.redirectedUrl == "/entry/show/$entry.stringId"
         assert flash.message != null
 
         //test outdated version number
@@ -125,7 +125,7 @@ class EntryControllerTests {
         entry.clearErrors()
 
         populateValidParams(params)
-        params.id = entry.id
+        params.id = entry.stringId
         params.version = -1
         controller.update()
 
@@ -148,12 +148,12 @@ class EntryControllerTests {
         assert entry.save() != null
         assert Entry.count() == 1
 
-        params.id = entry.id
+        params.id = entry.stringId
 
         controller.delete()
 
         assert Entry.count() == 0
-        assert Entry.get(entry.id) == null
+        assert Entry.get(entry.stringId) == null
         assert response.redirectedUrl == '/entry/list'
     }
 }

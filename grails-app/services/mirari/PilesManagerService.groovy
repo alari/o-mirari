@@ -1,9 +1,9 @@
 package mirari
 
+import grails.plugin.redis.RedisService
 import mirari.struct.Entry
 import mirari.struct.Pile
 import ru.mirari.infra.piles.PilesSortingService
-import grails.plugin.redis.RedisService
 
 class PilesManagerService extends PilesSortingService<Entry, Pile> {
 
@@ -12,22 +12,22 @@ class PilesManagerService extends PilesSortingService<Entry, Pile> {
     RedisService redisService
 
     @Override
-    protected Entry getItem(String id) {
+    protected Entry getItemById(final String id) {
         Entry.get(id)
     }
 
     @Override
-    protected Pile getPile(String id) {
+    protected Pile getPileById(final String id) {
         Pile.get(id)
     }
 
     @Override
-    protected double getItemPilePosition(String id) {
-        getItemPilePosition(getItem(id))
+    protected double getItemPilePositionById(final String id) {
+        getItemPilePosition(getItemById(id))
     }
 
     @Override
-    protected double getItemPilePosition(Entry entry) {
-        (double)entry.dateCreated.time
+    protected double getItemPilePosition(final Entry entry) {
+        (double) entry.dateCreated.time
     }
 }

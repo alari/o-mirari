@@ -38,7 +38,7 @@
 				<g:each in="${entryInstanceList}" status="i" var="entryInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 					
-						<td><g:link action="show" id="${entryInstance.id}">${fieldValue(bean: entryInstance, field: "dateCreated")}</g:link></td>
+						<td><g:link action="show" id="${entryInstance.stringId}">${fieldValue(bean: entryInstance, field: "dateCreated")}</g:link></td>
 					
 						<td><g:formatDate date="${entryInstance.lastUpdated}" /></td>
 					

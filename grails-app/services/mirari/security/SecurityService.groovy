@@ -60,7 +60,7 @@ class SecurityService {
     }
 
     String getId() {
-        loggedIn ? springSecurityService.principal.id : null
+        loggedIn ? springSecurityService.principal.getStringId : null
     }
 
     boolean isLoggedIn() {

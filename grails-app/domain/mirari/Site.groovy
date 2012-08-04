@@ -4,9 +4,6 @@ import mirari.security.Account
 import mirari.security.SiteKind
 
 class Site {
-    static mapWith = "mongo"
-    String id
-
     String name
     String host
     String displayName
@@ -17,10 +14,8 @@ class Site {
 
     SiteKind kind
 
-    String feedBurnerName
-
     Date dateCreated = new Date()
-    Date lastUpdated
+    Date lastUpdated = new Date()
 
     boolean isProfileSite() {
         kind == SiteKind.PROFILE
@@ -37,7 +32,6 @@ class Site {
     static constraints = {
         name unique: true
         host unique: true
-        feedBurnerName nullable: true
         account nullable:  true
     }
 

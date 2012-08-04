@@ -1,14 +1,13 @@
 package mirari.security
 
 class SecurityCode {
-    static mapWith = "mongo"
-    String id
-
     String token = UUID.randomUUID().toString().replaceAll("-", "");
 
     Account account
 
     Date dateCreated
+
+    static belongsTo = [account: Account]
 
     static constraints = {
         token index:true, indexAttributes: [unique:true, dropDups:true]
