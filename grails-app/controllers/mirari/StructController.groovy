@@ -1,30 +1,24 @@
 package mirari
 
 import mirari.struct.Entry
-import mirari.repo.struct.EntryRepo
 import mirari.repo.struct.PileRepo
 import mirari.struct.Pile
+import grails.plugins.springsecurity.Secured
 
 class StructController extends UtilController {
 
     def pilesManagerService
-    EntryRepo entryRepo
     PileRepo pileRepo
+    def structService
 
+    @Secured("ROLE_USER")
     def createEntry() {
         Entry entry = new Entry(owner: _site)
         if (request.post) {
             entry.title = params.title
-            entry.owner = _site
-            if (entryRepo.save(entry)) {
-                Pile pile = pileRepo.getBySiteAndTitle(entry.owner, entry.title)
-                pilesManagerService.put(entry, pile, true)
-
-                ((String)params.piles).split(/,/).each {
-                    pilesManagerService.put(entry, pileRepo.getBySiteAndTitle(_site, it), false)
-                }
-
-                redirect uri: pile.url
+            String url = structService.createEntry(entry, _portal, ((String)params.piles).split(/,/))
+            if (url) {
+                redirect url: url
             }
         }
         [entry: entry]

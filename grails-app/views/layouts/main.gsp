@@ -25,6 +25,7 @@
             <ul class="nav pull-right <sec:ifLoggedIn>logged-in</sec:ifLoggedIn>">
 
                 <sec:ifLoggedIn>
+                    <li><g:link controller="struct" action="createEntry">${message(code: "layout.createEntry")}</g:link>
                     <li><g:link controller="settings"><sec:username/></g:link>
                     </li>
                     <li><g:link controller="logout">${message(code: "layout.logout")}</g:link></li>

@@ -5,7 +5,7 @@ class SecurityCode {
 
     Account account
 
-    Date dateCreated
+    Date dateCreated = new Date()
 
     static belongsTo = [account: Account]
 

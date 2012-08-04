@@ -11,9 +11,10 @@
 </head>
 <body>
 
-<g:form method="post" action="createEntry">
-<f:all bean="entry"/>
+<mk:pageHeader>Create New Entry</mk:pageHeader>
 
+<g:form method="post" action="createEntry">
+    <f:field property="title" bean="${entry}"/>
     <f:field property="piles"/>
     <g:submitButton name="submit"/>
 </g:form>

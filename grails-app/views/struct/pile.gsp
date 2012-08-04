@@ -14,9 +14,7 @@
 <mk:pageHeader>${pile.title}</mk:pageHeader>
 
 <g:each in="${entries}" var="entry">
-    <div>
-        ${entry.title}
-    </div>
+    <g:render template="entryInPile" bean="${entry}"/>
 </g:each>
 
 </body>
