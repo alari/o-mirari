@@ -7,6 +7,8 @@ class SecurityCode {
 
     Date dateCreated = new Date()
 
+    static coffee = false
+
     static belongsTo = [account: Account]
 
     static constraints = {

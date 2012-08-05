@@ -12,10 +12,10 @@ modules = {
         dependsOn "jquery", "vendor_ko"
     }
     vendor_ko {
-        resource url: "/js/vendor/ko/knockout-2.1.0.pre.js"
+        resource url: "/js/vendor/ko/knockout-2.1.0.js"
     }
     vendor_ko_mapping {
-        resource url: "/js/vendor/ko/knockout-mapping.2.0.3.js"
+        resource url: "/js/vendor/ko/knockout-mapping.2.3.0.js"
         dependsOn "vendor_ko"
     }
 

@@ -1,7 +1,5 @@
 package mirari.data
 
-import mirari.struct.Entry
-
 class Block {
 
     static mapWith = "mongo"
@@ -11,7 +9,7 @@ class Block {
     BlockContent content
 
     static hasOne = [content:BlockContent]
-    static belongsTo = [entry:Entry]
+    static belongsTo = [holder:BlocksHolder]
 
     Date dateCreated
     Date lastUpdated
