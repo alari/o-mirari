@@ -48,6 +48,7 @@ target(main: "Builds or updates .coffee ViewModels for domain classes") {
 
         // Constructor
         coffee.add "  constructor: ->"
+        if(domainExtend) coffee.add "    super()"
         coffee.add "    @id = ko.observable null"
 
 
