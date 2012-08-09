@@ -1,0 +1,6 @@
+[submodule "infra-knock-coffee"]
+	path = infra-knock-coffee
+	url = git@github.com:alari/infra-knock-coffee.git
+[submodule "infra-file-storage"]
+	path = infra-file-storage
+	url = git@github.com:alari/infra-file-storage.git

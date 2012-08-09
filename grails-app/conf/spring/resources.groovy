@@ -1,8 +1,5 @@
 import ru.mirari.infra.I18n
 import ru.mirari.infra.ApplicationContextHolder
-import ru.mirari.infra.file.S3FileStorage
-import ru.mirari.infra.file.LocalFileStorage
-import ru.mirari.infra.file.FileStorageHolder
 import grails.util.Environment
 import java.util.concurrent.Executors
 import org.springframework.context.event.SimpleApplicationEventMulticaster
@@ -21,13 +18,6 @@ beans = {
 
     applicationContextHolder(ApplicationContextHolder) { bean ->
         bean.factoryMethod = 'getInstance'
-    }
-
-    // File storage
-    s3FileStorage(S3FileStorage)
-    localFileStorage(LocalFileStorage)
-    fileStorage(FileStorageHolder) {
-        storage = ref(Environment.isWarDeployed() ? "s3FileStorage" : "localFileStorage")
     }
 
     // Events multicaster

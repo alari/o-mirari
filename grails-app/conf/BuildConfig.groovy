@@ -6,6 +6,9 @@ grails.project.target.level = 1.7
 grails.project.source.level = 1.7
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 
+grails.plugin.location.'infra-knock-coffee' = "infra-knock-coffee"
+grails.plugin.location.'infra-file-storage' = "infra-file-storage"
+
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
     inherits("global") {
@@ -38,49 +41,42 @@ grails.project.dependency.resolution = {
     }
     dependencies {
         // markdown
-        compile 'org.pegdown:pegdown:1.1.0'
+        compile 'org.pegdown:pegdown:latest.release'
 
         runtime 'stax:stax:1.2.0'
 
         compile 'org.codehaus.gpars:gpars:0.12'
 
-        compile('eu.medsea.mimeutil:mime-util:2.1.3') {
-            exclude "slf4j-log4j12"
-        }
+        compile "org.jsoup:jsoup:latest.release"
 
-        compile "org.jsoup:jsoup:1.6.3"
-
-        compile "rome:rome:1.0"
-
-        // File storage
-        compile "net.java.dev.jets3t:jets3t:0.9.0"
+        compile "rome:rome:latest.release"
     }
 
     plugins {
         compile ":hibernate:$grailsVersion"
 
-        runtime ":jquery:1.7.2"
+        runtime ":jquery:latest.integration"
         runtime ":resources:1.2-RC1"
 
-        compile ":mongodb:1.0.0.GA"
+        compile ":mongodb:latest.integration"
 
-        runtime ":zipped-resources:1.0"
+        runtime ":zipped-resources:latest.integration"
         //runtime ":cached-resources:1.0"
-        runtime ":yui-minify-resources:0.1.5"
+        runtime ":yui-minify-resources:latest.integration"
 
-        test ":spock:0.6"
+        test ":spock:latest.integration"
 
-        compile ":mail:1.0"
+        compile ":mail:latest.integration"
 
         // SECURITY
-        runtime(':spring-security-core:1.2.7.3')
+        runtime(':spring-security-core:latest.integration')
 
         compile(":twitter-bootstrap:2.0.2.25") {
             excludes "svn"
         }
-        compile ":fields:1.1"
+        compile ":fields:latest.integration"
 
-        compile ":redis:1.3.2"
+        compile ":redis:latest.integration"
 
         //compile ":spring-events:1.2"
         //compile ":bootstrap-file-upload:2.1.1"
