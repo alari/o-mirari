@@ -1,7 +1,7 @@
 package mirari.data.content
 
-import ru.mirari.infra.file.FileInfo
 import ru.mirari.infra.ApplicationContextHolder
+import ru.mirari.infra.file.FileInfo
 
 /**
  * @author alari

@@ -1,7 +1,7 @@
 package mirari.data.content
 
-import ru.mirari.infra.file.FileInfo
 import org.springframework.stereotype.Component
+import ru.mirari.infra.file.FileInfo
 
 /**
  * @author alari
@@ -13,13 +13,13 @@ abstract class ContentStrategy {
 
     //abstract void setViewModelContent(ContentHolder holder, BlockVM blockVM)
 
-    void setContentFile(ContentHolder unit, FileInfo fileInfo){}
+    void setContentFile(ContentHolder unit, FileInfo fileInfo) {}
 
-    boolean isContentFileSupported(FileInfo info){false}
+    boolean isContentFileSupported(FileInfo info) {false}
 
-    void saveContent(ContentHolder unit){}
+    void saveContent(ContentHolder unit) {}
 
-    void deleteContent(ContentHolder unit){}
+    void deleteContent(ContentHolder unit) {}
 
     boolean isInternal() {
         !external

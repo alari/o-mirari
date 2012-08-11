@@ -1,10 +1,10 @@
 package mirari.data.content.internal
 
+import mirari.data.content.ContentData
+import mirari.data.content.ContentHolder
+import mirari.data.content.SoundType
 import ru.mirari.infra.file.FileHolder
 import ru.mirari.infra.file.FileInfo
-import mirari.data.content.ContentHolder
-import mirari.data.content.ContentData
-import mirari.data.content.SoundType
 
 /**
  * @author alari
@@ -28,7 +28,7 @@ class SoundContentStrategy extends FilesHolderContentStrategy {
 
     private List<String> getFileNames(ContentHolder unit) {
         List<String> files = []
-        for (String s: getSoundTypes(unit)) {
+        for (String s : getSoundTypes(unit)) {
             files.add(SoundType.forName(s).filename)
         }
         files

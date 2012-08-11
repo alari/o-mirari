@@ -6,6 +6,8 @@ class BlocksHolder {
 
     static mapWith = "mongo"
 
+    String id
+
     List<Block> blocks = []
 
     Entry entry

@@ -1,5 +1,5 @@
 exports = this
-class exports.AccountVM extends MyParent
+class exports.AccountVM
   constructor: ->
     @id = ko.observable null
     @email = ko.observable null

@@ -1,12 +1,12 @@
 package mirari.data.content.internal
 
-
+import mirari.data.BlockContent
+import mirari.data.content.ContentHolder
+import mirari.repo.data.BlockContentRepo
 import org.springframework.beans.factory.annotation.Autowired
 import ru.mirari.infra.TextProcessUtil
 import ru.mirari.infra.file.FileInfo
-import mirari.data.content.ContentHolder
-import mirari.data.BlockContent
-import mirari.repo.data.BlockContentRepo
+
 /**
  * @author alari
  * @since 1/6/12 5:41 PM
@@ -30,12 +30,12 @@ class TextContentStrategy extends InternalContentStrategy {
     void setContentFile(ContentHolder unit, FileInfo fileInfo) {
         if (!isContentFileSupported(fileInfo)) return;
         if (!unit.content) unit.content = new BlockContent()
-        
+
         unit.title = fileInfo.title
-        
-        if(fileInfo.extension.equalsIgnoreCase("txt")) {
+
+        if (fileInfo.extension.equalsIgnoreCase("txt")) {
             unit.content.text = fileInfo.file.getText()
-        } else if(fileInfo.extension in ["htm", "html"]) {
+        } else if (fileInfo.extension in ["htm", "html"]) {
             unit.content.text = TextProcessUtil.htmlToMarkdown(fileInfo.file.getText())
         }
     }

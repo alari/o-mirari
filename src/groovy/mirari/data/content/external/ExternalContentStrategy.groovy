@@ -1,9 +1,9 @@
 package mirari.data.content.external
 
-import ru.mirari.infra.file.FileInfo
-import mirari.data.content.ContentStrategy
-import mirari.data.content.ContentHolder
 import mirari.data.content.ContentData
+import mirari.data.content.ContentHolder
+import mirari.data.content.ContentStrategy
+import ru.mirari.infra.file.FileInfo
 
 /**
  * @author alari

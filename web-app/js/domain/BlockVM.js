@@ -12,6 +12,9 @@
       this.dateCreated = ko.observable(null);
       this.holder = ko.observable(null);
       this.lastUpdated = ko.observable(null);
+      this.owner = ko.observable(null);
+      this.title = ko.observable(null);
+      this.type = ko.observable(null);
     }
 
     BlockVM.prototype.fromJson = function(json) {
@@ -33,6 +36,18 @@
           create: function(o) {
             if (o.data) {
               return new BlocksHolderVM().fromJson(o.data);
+            } else {
+              return null;
+            }
+          },
+          key: function(o) {
+            return ko.utils.unwrapObservable(o.id);
+          }
+        },
+        owner: {
+          create: function(o) {
+            if (o.data) {
+              return new SiteVM().fromJson(o.data);
             } else {
               return null;
             }

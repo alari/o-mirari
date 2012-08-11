@@ -1,8 +1,8 @@
 package mirari.data.content
 
-import ru.mirari.infra.file.FileInfo
-import mirari.data.BlockContent
 import mirari.Site
+import mirari.data.BlockContent
+import ru.mirari.infra.file.FileInfo
 
 /**
  * @author alari
@@ -24,6 +24,6 @@ public interface ContentHolder {
     void setContentUrl(String url)
 
     void deleteContent()
-    
+
     Site getOwner()
 }

@@ -22,7 +22,7 @@ public enum ContentData {
     }
 
     Set<String> getSetFrom(ContentHolder unit) {
-        (Set)unit.getAt(key)
+        (Set) unit.getAt(key)
     }
 
     void putTo(ContentHolder unit, String value) {

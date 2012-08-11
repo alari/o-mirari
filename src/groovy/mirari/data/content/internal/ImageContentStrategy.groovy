@@ -1,14 +1,13 @@
 package mirari.data.content.internal
 
-
+import mirari.data.content.ContentHolder
+import mirari.image.CommonImage
+import mirari.util.image.CommonImageSrc
 import org.springframework.beans.factory.annotation.Autowired
 import ru.mirari.infra.file.FileInfo
 import ru.mirari.infra.image.ImageFormat
 import ru.mirari.infra.image.ImageHolder
 import ru.mirari.infra.image.ImageStorageService
-import mirari.data.content.ContentHolder
-import mirari.image.CommonImage
-import mirari.util.image.CommonImageSrc
 
 /**
  * @author alari

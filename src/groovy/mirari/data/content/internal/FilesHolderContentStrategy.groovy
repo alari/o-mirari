@@ -1,9 +1,9 @@
 package mirari.data.content.internal
 
+import mirari.data.content.ContentHolder
 import org.springframework.beans.factory.annotation.Autowired
 import ru.mirari.infra.file.FileHolder
 import ru.mirari.infra.file.FileStorageService
-import mirari.data.content.ContentHolder
 
 /**
  * @author alari

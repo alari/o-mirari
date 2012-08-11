@@ -1,7 +1,7 @@
 package mirari.data.content.internal
 
-import mirari.data.content.ContentStrategy
 import mirari.data.content.ContentHolder
+import mirari.data.content.ContentStrategy
 
 /**
  * @author alari
