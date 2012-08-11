@@ -4,6 +4,8 @@ import mirari.struct.Entry
 
 class BlocksHolder {
 
+    static mapWith = "mongo"
+
     List<Block> blocks = []
 
     Entry entry
