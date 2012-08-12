@@ -1,6 +1,6 @@
 package mirari
 
-import mirari.model.Avatar
+//import mirari.model.Avatar
 
 class AvatarTagLib {
     static namespace = "avatar"
