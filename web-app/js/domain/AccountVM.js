@@ -4,12 +4,16 @@
 
   exports = this;
 
-  exports.AccountVM = (function() {
+  exports.mirari.security.AccountVM = (function() {
 
     function AccountVM() {
       this.fromJson = __bind(this.fromJson, this);      this.id = ko.observable(null);
+      this.authorities = ko.observable(null);
+      this.authorityNames = ko.observable(null);
       this.email = ko.observable(null);
+      this.id = ko.observable(null);
       this.mainProfile = ko.observable(null);
+      this.version = ko.observable(null);
     }
 
     AccountVM.prototype.fromJson = function(json) {
@@ -18,7 +22,7 @@
         mainProfile: {
           create: function(o) {
             if (o.data) {
-              return new SiteVM().fromJson(o.data);
+              return new mirari.SiteVM().fromJson(o.data);
             } else {
               return null;
             }

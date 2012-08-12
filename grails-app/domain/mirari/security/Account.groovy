@@ -14,9 +14,7 @@ class Account {
 
     Site mainProfile
 
-    static coffee = [
-            ignore: ["password", "passwordExpired", "enabled", "accountLocked", "accountExpired"],
-    ]
+    static coffeeIgnore = ["password", "passwordExpired", "enabled", "accountLocked", "accountExpired"]
 
 	static constraints = {
 		email blank: false, unique: true, email: true

@@ -4,12 +4,14 @@
 
   exports = this;
 
-  exports.BlockContentVM = (function() {
+  exports.mirari.data.BlockContentVM = (function() {
 
     function BlockContentVM() {
       this.fromJson = __bind(this.fromJson, this);      this.id = ko.observable(null);
       this.block = ko.observable(null);
+      this.id = ko.observable(null);
       this.text = ko.observable(null);
+      this.version = ko.observable(null);
     }
 
     BlockContentVM.prototype.fromJson = function(json) {
@@ -18,7 +20,7 @@
         block: {
           create: function(o) {
             if (o.data) {
-              return new BlockVM().fromJson(o.data);
+              return new mirari.data.BlockVM().fromJson(o.data);
             } else {
               return null;
             }

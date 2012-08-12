@@ -29,6 +29,12 @@ class Site {
         !isPortalSite()
     }
 
+    static coffee = [
+            kind: [mapping:[
+              :
+            ]]
+    ]
+
     static constraints = {
         name unique: true
         host unique: true

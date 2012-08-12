@@ -4,12 +4,14 @@
 
   exports = this;
 
-  exports.BlocksHolderVM = (function() {
+  exports.mirari.data.BlocksHolderVM = (function() {
 
     function BlocksHolderVM() {
       this.fromJson = __bind(this.fromJson, this);      this.id = ko.observable(null);
       this.blocks = ko.observableArray([]);
       this.entry = ko.observable(null);
+      this.id = ko.observable(null);
+      this.version = ko.observable(null);
     }
 
     BlocksHolderVM.prototype.fromJson = function(json) {
@@ -18,7 +20,7 @@
         blocks: {
           create: function(o) {
             if (o.data) {
-              return new BlockVM().fromJson(o.data);
+              return new mirari.data.BlockVM().fromJson(o.data);
             } else {
               return null;
             }
@@ -30,7 +32,7 @@
         entry: {
           create: function(o) {
             if (o.data) {
-              return new EntryVM().fromJson(o.data);
+              return new mirari.struct.EntryVM().fromJson(o.data);
             } else {
               return null;
             }

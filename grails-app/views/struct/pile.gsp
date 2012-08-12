@@ -17,5 +17,7 @@
     <g:render template="entryInPile" bean="${entry}"/>
 </g:each>
 
+${json}
+
 </body>
 </html>

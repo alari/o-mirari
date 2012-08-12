@@ -12,7 +12,7 @@ class EntryControllerTests {
 
     def populateValidParams(params) {
       assert params != null
-      // TODO: Populate valid properties like...
+      // TODO: Populate valid props like...
       //params["name"] = 'someValidName'
     }
 

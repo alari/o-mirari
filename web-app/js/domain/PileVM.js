@@ -4,15 +4,19 @@
 
   exports = this;
 
-  exports.PileVM = (function() {
+  exports.mirari.struct.PileVM = (function() {
 
     function PileVM() {
       this.fromJson = __bind(this.fromJson, this);      this.id = ko.observable(null);
       this.dateCreated = ko.observable(null);
+      this.id = ko.observable(null);
       this.lastUpdated = ko.observable(null);
       this.name = ko.observable(null);
       this.site = ko.observable(null);
+      this.stringId = ko.observable(null);
       this.title = ko.observable(null);
+      this.url = ko.observable(null);
+      this.version = ko.observable(null);
     }
 
     PileVM.prototype.fromJson = function(json) {
@@ -21,7 +25,7 @@
         site: {
           create: function(o) {
             if (o.data) {
-              return new SiteVM().fromJson(o.data);
+              return new mirari.SiteVM().fromJson(o.data);
             } else {
               return null;
             }

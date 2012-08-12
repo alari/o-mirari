@@ -10,6 +10,7 @@ class StructController extends UtilController {
     def pilesManagerService
     PileRepo pileRepo
     def structService
+    def knockCoffeeService
 
     @Secured("ROLE_USER")
     def createEntry() {
@@ -26,7 +27,7 @@ class StructController extends UtilController {
 
     def pile(String pileName) {
         Pile pile = pileRepo.findBySiteAndName(_site, pileName)
-        [entries: pilesManagerService.draw(pile, 20, 0), pile: pile]
+        [entries: pilesManagerService.draw(pile, 20, 0), pile: pile, json: knockCoffeeService.toJson(pile)]
     }
 
     def entry(String id) {
