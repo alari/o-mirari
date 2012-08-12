@@ -16,13 +16,23 @@ public interface PilesManager<T extends PiledItem, K extends SortablePile> {
 
     public void delete(K pile);
 
-    public void setPosition(T item, K pile, int position);
+    public void fix(T item, K pile, int position);
 
-    public void dropPosition(T item, K pile, boolean withTail);
+    public void unfix(T item, K pile, boolean withTail);
+
+    public List<T> drawFixed(K pile, long limit, long offset);
 
     public List<T> draw(K pile, long limit, long offset);
 
     public List<K> getRelatedPiles(K pile, int num, double fromPosition, int lookMin, int lookMax);
+
+    public boolean isFixed(T item, K pile);
+
+    public void hide(T item, K pile);
+
+    public boolean isHidden(T item, K pile);
+
+    public void reveal(T item, K pile);
 
     public Collection<K> getPiles(T item);
 

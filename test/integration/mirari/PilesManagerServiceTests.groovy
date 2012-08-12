@@ -113,13 +113,13 @@ class PilesManagerServiceTests {
         service.put(entries[0], pile, true)
         assert service.sizeOf(pile) == 1
 
-        service.setPosition(entries[0], pile, 0)
+        service.fix(entries[0], pile, 0)
         assert service.sizeOf(pile) == 1
 
         service.put(entries[1], pile, true)
         assert service.drawIds(pile, 2, 0) == [entries[1].stringId, entries[0].stringId]
 
-        service.setPosition(entries[0], pile, 0)
+        service.fix(entries[0], pile, 0)
         assert service.drawIds(pile, 2, 0) == [entries[0].stringId, entries[1].stringId]
 
         // sort one additional
@@ -127,27 +127,27 @@ class PilesManagerServiceTests {
         assert service.drawIds(pile, 20, 0) == [entries[0].stringId, entries[1].stringId, entries[2].stringId]
 
         // put first
-        service.setPosition(entries[2], pile, 0)
+        service.fix(entries[2], pile, 0)
         List ids = [entries[2].stringId, entries[0].stringId, entries[1].stringId]
         assert service.drawIds(pile, 3, 0) == ids
 
-        service.dropPosition(entries[2], pile, false)
+        service.unfix(entries[2], pile, false)
         assert service.drawIds(pile, 20, 0) == [entries[0].stringId, entries[1].stringId, entries[2].stringId]
 
         // put last
-        service.setPosition(entries[2], pile, 2)
+        service.fix(entries[2], pile, 2)
         ids = [entries[0].stringId, entries[1].stringId, entries[2].stringId]
         assert service.drawIds(pile, 20, 0) == ids
 
-        service.dropPosition(entries[2], pile, false)
+        service.unfix(entries[2], pile, false)
         assert service.drawIds(pile, 20, 0) == [entries[0].stringId, entries[1].stringId, entries[2].stringId]
 
         // put second
-        service.setPosition(entries[2], pile, 1)
+        service.fix(entries[2], pile, 1)
         ids = [entries[0].stringId, entries[2].stringId, entries[1].stringId]
         assert service.drawIds(pile, 3, 0) == ids
 
-        service.dropPosition(entries[2], pile, false)
+        service.unfix(entries[2], pile, false)
         assert service.drawIds(pile, 20, 0) == [entries[0].stringId, entries[1].stringId, entries[2].stringId]
 
         // add one more
@@ -160,18 +160,18 @@ class PilesManagerServiceTests {
         assert service.drawIds(pile, 20, 0) == ids
 
         // put second
-        service.setPosition(entries[3], pile, 1)
+        service.fix(entries[3], pile, 1)
         ids = [entries[0].stringId, entries[3].stringId, entries[1].stringId, entries[4].stringId, entries[2].stringId]
         assert service.drawIds(pile, 5, 0) == ids
 
-        service.dropPosition(entries[3], pile, false)
+        service.unfix(entries[3], pile, false)
         ids = [entries[0].stringId, entries[1].stringId, entries[4].stringId, entries[3].stringId, entries[2].stringId]
         assert service.drawIds(pile, 20, 0) == ids
 
         // test with tail
         service.metaClass.getItemById = {String id -> entries.find {it.stringId == id}
         }
-        service.dropPosition(entries[0], pile, true)
+        service.unfix(entries[0], pile, true)
         ids = [entries[4].stringId, entries[3].stringId, entries[2].stringId, entries[1].stringId, entries[0].stringId]
         assert service.drawIds(pile, 5, 0) == ids
     }

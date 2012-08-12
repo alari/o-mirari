@@ -18,13 +18,13 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
                     redis.lrem(keyPileTop(pile), 0, item.stringId)
                     redis.lpush(keyPileTop(pile), item.stringId)
                 } else {
-                    redis.zadd(keyPileCommon(pile), getItemPilePosition(item, pile), item.stringId)
+                    redis.zadd(keyPileCommon(pile), getItemPileScore(item, pile), item.stringId)
                 }
             } else {
                 if (first) {
-                    setPosition(item, pile, 0)
+                    fix(item, pile, 0)
                 } else {
-                    dropPosition(item, pile, false)
+                    unfix(item, pile, false)
                 }
             }
         }
@@ -101,17 +101,81 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
         pileIds.collect {getPileById(it)}
     }
 
+    @Override
+    boolean isFixed(final I item, final P pile) {
+        boolean fixed = false
+        redisService.withRedis {Jedis redis ->
+            final String topIndex = keyPileTop(pile)
+            long topCount = redis.llen(keyPileTop(pile))
+            int i=0
+            String id
+            for (
+                    id = redis.lindex(topIndex, 0);
+                    i<topCount && id && id != item.stringId;
+                    id = redis.lindex(topIndex, i)
+            ) {
+                i++
+            }
+            fixed = (id == item.stringId)
+        }
+        fixed
+    }
+
+    @Override
+    void hide(final I item, final P pile) {
+        redisService.withRedis {Jedis redis->
+            if(!redis.zrem(keyPileCommon(pile), item.stringId)) {
+                redis.lrem(keyPileTop(pile), 0, item.stringId)
+            }
+        }
+    }
+
+    @Override
+    boolean isHidden(final I item, final P pile) {
+        boolean hidden = false
+        if (!inPile(item, pile)) return false
+        if (isFixed(item, pile)) return false
+        redisService.withRedis {Jedis redis->
+            hidden = !redis.zscore(keyPileCommon(pile), item.stringId)
+        }
+        hidden
+    }
+
+    @Override
+    void reveal(final I item, final P pile) {
+        if (isHidden(item, pile)) {
+            redisService.withRedis {Jedis redis->
+                redis.zadd(keyPileCommon(pile), getItemPileScore(item, pile), item.stringId)
+            }
+        }
+    }
+
     List<String> drawIds(final P pile, long limit, long offset) {
+        if (!limit || !pile) throw new IllegalArgumentException();
+
+        List<String> itemIds = drawFixedIds(pile, limit, offset)
+        redisService.withRedis { Jedis redis ->
+            long topCount = redis.llen(keyPileTop(pile))
+            if (itemIds.size() < limit) {
+                itemIds.addAll(redis.zrevrange(keyPileCommon(pile), Math.max(offset - topCount - 1, 0), limit - itemIds.size() - 1))
+            }
+        }
+        itemIds
+    }
+
+    @Override
+    List<I> drawFixed(final P pile, long limit, long offset) {
+        drawFixedIds(pile, limit, offset).collect {getItemById(it)}
+    }
+
+    List<String> drawFixedIds(final P pile, long limit, long offset) {
         if (!limit || !pile) throw new IllegalArgumentException();
 
         List<String> itemIds = []
         redisService.withRedis { Jedis redis ->
             long topCount = redis.llen(keyPileTop(pile))
             if (topCount <= offset + limit) {
-                itemIds.addAll(redis.lrange(keyPileTop(pile), offset, Math.min(offset + limit - 1, topCount)))
-            }
-            if (itemIds.size() < limit) {
-                itemIds.addAll(redis.zrevrange(keyPileCommon(pile), Math.max(offset - topCount - 1, 0), limit - itemIds.size() - 1))
+                itemIds = redis.lrange(keyPileTop(pile), offset, Math.min(offset + limit - 1, topCount))
             }
         }
         itemIds
@@ -149,7 +213,7 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
     }
 
     @Override
-    void setPosition(final I item, final P pile, int position) {
+    void fix(final I item, final P pile, int position) {
         if (!item || !pile || position == null) throw new IllegalArgumentException();
 
         final String topIndex = keyPileTop(pile)
@@ -211,7 +275,7 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
     }
 
     @Override
-    void dropPosition(final I item, final P pile, boolean withTail) {
+    void unfix(final I item, final P pile, boolean withTail) {
         if (!item || !pile) throw new IllegalArgumentException();
 
         final String topIndex = keyPileTop(pile)
@@ -237,13 +301,13 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
                     removeIds.add(id)
                     for (String rmId in removeIds) {
                         redis.lrem(topIndex, 0, rmId)
-                        redis.zadd(keyPileCommon(pile), getItemPilePositionById(rmId, pile), rmId)
+                        redis.zadd(keyPileCommon(pile), getItemPileScoreById(rmId, pile), rmId)
                     }
                 }
             } else {
                 // Remove this item only
                 redis.lrem(topIndex, 0, item.stringId)
-                redis.zadd(keyPileCommon(pile), getItemPilePosition(item, pile), item.stringId)
+                redis.zadd(keyPileCommon(pile), getItemPileScore(item, pile), item.stringId)
             }
         }
     }
@@ -252,11 +316,11 @@ abstract class PilesSortingService<I extends PiledItem, P extends SortablePile> 
 
     abstract protected P getPileById(final String id)
 
-    abstract protected double getItemPilePositionById(final String id, final String pileId)
+    abstract protected double getItemPileScoreById(final String id, final String pileId)
 
-    abstract protected double getItemPilePositionById(final String entryId, final P pile)
+    abstract protected double getItemPileScoreById(final String entryId, final P pile)
 
-    abstract protected double getItemPilePosition(final I entry, final P pile)
+    abstract protected double getItemPileScore(final I entry, final P pile)
 
     abstract protected RedisService getRedisService()
 
