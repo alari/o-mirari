@@ -6,7 +6,6 @@ grails.project.target.level = 1.7
 grails.project.source.level = 1.7
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 
-grails.plugin.location.'infra-knock-coffee' = "infra-knock-coffee"
 grails.plugin.location.'infra-file-storage' = "infra-file-storage"
 
 grails.project.dependency.resolution = {
@@ -36,8 +35,6 @@ grails.project.dependency.resolution = {
         // For pegdown markdown
         mavenRepo "http://scala-tools.org/repo-releases"
 
-        // For file storage
-        mavenRepo "http://www.jets3t.org/maven2"
     }
     dependencies {
         // markdown
@@ -60,6 +57,11 @@ grails.project.dependency.resolution = {
 
         compile ":mongodb:latest.integration"
 
+        compile ":platform-core:latest.integration"
+
+        compile ":angularjs-resources:latest.integration"
+        compile ":coffeescript-resources:latest.integration"
+
         runtime ":zipped-resources:latest.integration"
         //runtime ":cached-resources:1.0"
         runtime ":yui-minify-resources:latest.integration"
@@ -71,7 +73,7 @@ grails.project.dependency.resolution = {
         // SECURITY
         runtime(':spring-security-core:latest.integration')
 
-        compile(":twitter-bootstrap:2.0.2.25") {
+        compile(":twitter-bootstrap:2.0.4") {
             excludes "svn"
         }
         compile ":fields:latest.integration"

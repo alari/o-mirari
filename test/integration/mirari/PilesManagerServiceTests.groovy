@@ -13,9 +13,11 @@ import mirari.struct.Pile
 class PilesManagerServiceTests {
 
     def redisService
+    def pilesCommonsManagerService
 
     void setUp() {
         service.redisService = redisService
+        service.pilesCommonsManagerService = pilesCommonsManagerService
     }
 
     void testPutDraw() {
