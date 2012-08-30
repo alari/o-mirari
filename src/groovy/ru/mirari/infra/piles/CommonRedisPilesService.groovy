@@ -49,7 +49,6 @@ abstract class CommonRedisPilesService<I extends PiledItem, P extends SortablePi
 
     @Override
     public unwireItems(final P pile) {
-        List<String> items = []
         redisService.withRedis { Jedis redis ->
             redis.del keyPile(pile)
         }

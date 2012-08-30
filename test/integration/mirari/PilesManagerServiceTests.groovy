@@ -18,6 +18,8 @@ class PilesManagerServiceTests {
     void setUp() {
         service.redisService = redisService
         service.pilesCommonsManagerService = pilesCommonsManagerService
+        service.metaClass.getItemById = {String id -> entries.find {it.stringId == id}}
+        service.pilesCommonsManagerService.metaClass.getItemById = {String id -> entries.find {it.stringId == id}}
     }
 
     void testPutDraw() {
@@ -25,10 +27,21 @@ class PilesManagerServiceTests {
             service.put(null, null, true)
         }
 
-        Entry entry = new Entry()
+        entries = [
+                newEntry,
+                newEntry ,
+                newEntry ,
+                newEntry ,
+                newEntry ,
+                newEntry ,
+                newEntry ,
+                newEntry ,
+                newEntry ,
+        ]
+
+        Entry entry = entries[0]
         Pile pile = new Pile()
 
-        entry.id = 1
         entry.dateCreated = new Date()
         pile.id = 1
 
@@ -42,22 +55,22 @@ class PilesManagerServiceTests {
         def s = service.drawIds(pile, 1, 0)
         assert s[0] == entry.stringId
 
-        entry.id = 2
+        entry = entries[1]
         service.put(entry, pile, true)
         assert service.sizeOf(pile) == 2
 
         s = service.drawIds(pile, 2, 0)
         assert s[0] == entry.stringId
-        assert s[1] == 1.toString()
+        assert s[1] == 0.toString()
 
-        entry.id = 3
+        entry = entries[2]
         service.put(entry, pile, false)
         assert service.sizeOf(pile) == 3
 
         s = service.drawIds(pile, 3, 0)
-        assert s == [2, 1, 3]*.toString()
+        assert s == [1, 0, 2]*.toString()
 
-        entry.id = 4
+        entry = entries[3]
         entry.dateCreated.time -= 10
 
         service.put(entry, pile, false)
@@ -66,7 +79,7 @@ class PilesManagerServiceTests {
         s = service.drawIds(pile, 10, 0)
         assert s == [2, 1, 3, 4]*.toString()
 
-        entry.id = 5
+        entry = entries[4]
         entry.dateCreated.time += 1000
 
         service.put(entry, pile, false)
@@ -78,14 +91,14 @@ class PilesManagerServiceTests {
         pile.id = 2
         service.delete(pile)
 
-        entry.id = 1
+        entry = entries[0]
         entry.dateCreated.time -= 10000
         service.put(entry, pile, false)
         assert service.sizeOf(pile) == 1
         s = service.drawIds(pile, 100, 0)
         assert s == [entry.stringId]
 
-        entry.id = 2
+        entry = entries[1]
         service.put(entry, pile, true)
         assert service.sizeOf(pile) == 2
         s = service.drawIds(pile, 100, 0)
@@ -99,7 +112,7 @@ class PilesManagerServiceTests {
         Pile pile = new Pile()
         pile.id = 3
 
-        List<Entry> entries = [
+        entries = [
                 newEntry,
                 newEntry,
                 newEntry,
@@ -171,14 +184,14 @@ class PilesManagerServiceTests {
         assert service.drawIds(pile, 20, 0) == ids
 
         // test with tail
-        service.metaClass.getItemById = {String id -> entries.find {it.stringId == id}
-        }
         service.unfix(entries[0], pile, true)
         ids = [entries[4].stringId, entries[3].stringId, entries[2].stringId, entries[1].stringId, entries[0].stringId]
         assert service.drawIds(pile, 5, 0) == ids
     }
 
     private int entriesNum = 0
+
+    protected List<Entry> entries = []
 
     private Entry getNewEntry(double pilePos = 0) {
         Entry e = new Entry()
